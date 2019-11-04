@@ -25,17 +25,20 @@ io.on('connection', (client) => {
         // console.log('usuario', data);
         //envia mensaje a todos para notofocar el usuario conectado
         client.broadcast.to(data.sala).emit('listaPersona', usuarios.getPersonasPorSala(data.sala));
-
+        client.broadcast.to(data.sala).emit('crearMensaje', crearMensaje('Admin', `${data.nombre} se conecto`));
         callBack(usuarios.getPersonasPorSala(data.sala));
     });
 
-    client.on('crearMensaje', (data) => {
+    client.on('crearMensaje', (data, callBack) => {
 
         let persona = usuarios.getPersona(client.id);
 
         let mensaje = crearMensaje(persona.nombre, data.mensaje);
 
         client.broadcast.to(persona.sala).emit('crearMensaje', mensaje);
+
+
+        callBack(mensaje);
     })
 
     client.on('disconnect', () => {
